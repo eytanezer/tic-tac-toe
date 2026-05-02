@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace TicTacToe
@@ -6,17 +7,20 @@ namespace TicTacToe
     {
         private int _scoreX;
         private int _scoreO;
+        private String _waitingWinner;
 
         private void OnEnable()
         {
             GameEvents.GameWon += OnGameWon;
             GameEvents.GameDrawn += OnGameDrawn;
+            GameEvents.NewGame += OnNewGame;
         }
-
+        
         private void OnDisable()
         {
             GameEvents.GameWon -= OnGameWon;
             GameEvents.GameDrawn -= OnGameDrawn;
+            GameEvents.NewGame += OnNewGame;
         }
 
         private void Start()
@@ -26,7 +30,19 @@ namespace TicTacToe
 
         private void OnGameWon(string winner)
         {
-            if (winner == "X")
+            _waitingWinner = winner;
+            
+            GameEvents.ResultReady?.Invoke($"{winner} wins!");
+        }
+
+        private void OnGameDrawn()
+        {
+            GameEvents.ResultReady?.Invoke("Draw!");
+        }
+        
+        private void OnNewGame()
+        {
+            if (_waitingWinner == "X")
             {
                 _scoreX++;
             }
@@ -36,12 +52,6 @@ namespace TicTacToe
             }
 
             GameEvents.ScoreChanged?.Invoke(_scoreX, _scoreO);
-            GameEvents.ResultReady?.Invoke($"{winner} wins!");
-        }
-
-        private void OnGameDrawn()
-        {
-            GameEvents.ResultReady?.Invoke("Draw!");
         }
     }
 }

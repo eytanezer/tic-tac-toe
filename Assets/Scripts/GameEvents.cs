@@ -12,6 +12,8 @@ namespace TicTacToe
         public static Action GameDrawn;
         public static Action<int, int> ScoreChanged;
         public static Action<string> ResultReady;
+        public static Action NewGame;
+        public static Action UndoMove;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetOnPlay()
@@ -23,6 +25,7 @@ namespace TicTacToe
             GameDrawn = null;
             ScoreChanged = null;
             ResultReady = null;
+            NewGame = null;
         }
     }
 }

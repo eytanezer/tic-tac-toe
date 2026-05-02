@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TicTacToe
@@ -20,15 +21,22 @@ namespace TicTacToe
             new[] { 0, 4, 8 },
             new[] { 2, 4, 6 },
         };
+        
+        // turn stack
+        private Stack<Cell> _turnStack = new Stack<Cell>();
 
         private void OnEnable()
         {
             GameEvents.CellClicked += OnCellClicked;
+            GameEvents.NewGame += ResetBoard;
+            GameEvents.UndoMove += UndoLastMove;
         }
 
         private void OnDisable()
         {
             GameEvents.CellClicked -= OnCellClicked;
+            GameEvents.NewGame -= ResetBoard;
+            GameEvents.UndoMove -= UndoLastMove;
         }
 
         private void OnCellClicked(Cell cell)
@@ -46,6 +54,10 @@ namespace TicTacToe
             }
 
             cell.SetMark(_currentPlayer);
+            
+            // add the chosen cell to the stack
+            _turnStack.Push(cell);
+            
             GameEvents.MoveMade?.Invoke();
 
             string winner = CheckWinner();
@@ -53,7 +65,7 @@ namespace TicTacToe
             {
                 _isGameOver = true;
                 GameEvents.GameWon?.Invoke(winner);
-                ResetBoard();
+                // ResetBoard();
                 return;
             }
 
@@ -61,7 +73,7 @@ namespace TicTacToe
             {
                 _isGameOver = true;
                 GameEvents.GameDrawn?.Invoke();
-                ResetBoard();
+                // ResetBoard();
                 return;
             }
 
@@ -76,6 +88,7 @@ namespace TicTacToe
             }
             _currentPlayer = "X";
             _isGameOver = false;
+            _turnStack.Clear();
         }
 
         private string CheckWinner()
@@ -106,5 +119,20 @@ namespace TicTacToe
             }
             return true;
         }
+        
+        public void UndoLastMove()
+        {
+            if (_turnStack.Count == 0) {return; }
+
+            Cell lastCell = _turnStack.Pop();
+            
+            // switch back to the previous player
+            _currentPlayer  = lastCell.Mark;
+            
+            lastCell.Clear();
+            _isGameOver = false;
+        }
+        
+        
     }
 }

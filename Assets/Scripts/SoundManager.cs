@@ -8,6 +8,7 @@ namespace TicTacToe
         [SerializeField] private AudioClip _successClip;
         [SerializeField] private AudioClip _errorClip;
         [SerializeField] private AudioClip _resultClip;
+        [SerializeField] private AudioClip _undoClip;
 
         private void OnEnable()
         {
@@ -15,6 +16,7 @@ namespace TicTacToe
             GameEvents.InvalidMove += OnInvalidMove;
             GameEvents.GameWon += OnGameWon;
             GameEvents.GameDrawn += OnGameDrawn;
+            GameEvents.UndoMove += OnUndoMove;
         }
 
         private void OnDisable()
@@ -23,6 +25,8 @@ namespace TicTacToe
             GameEvents.InvalidMove -= OnInvalidMove;
             GameEvents.GameWon -= OnGameWon;
             GameEvents.GameDrawn -= OnGameDrawn;
+            GameEvents.UndoMove -= OnUndoMove;
+            
         }
 
         private void OnMoveMade()
@@ -43,6 +47,11 @@ namespace TicTacToe
         private void OnGameDrawn()
         {
             _audioSource.PlayOneShot(_resultClip);
+        }
+        
+        private void OnUndoMove()
+        {
+            _audioSource.PlayOneShot(_undoClip);
         }
     }
 }
